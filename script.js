@@ -109,3 +109,54 @@ window.addEventListener("mousemove",(e)=>{
     glow.style.top=e.clientY-9+"px";
 
 });
+
+// Чат с цифровым помощником ЦКиД
+
+async function sendMessage(){
+
+    let input = document.getElementById("userMessage");
+    let chat = document.getElementById("chatMessages");
+
+    let message = input.value.trim();
+
+    if(message === ""){
+        return;
+    }
+
+    chat.innerHTML += "<div class='user-message'>" + message + "</div>";
+
+    input.value = "";
+
+    fetch("/api/bot", {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body: JSON.stringify({
+            message: message
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        chat.innerHTML += 
+        "<div class='bot-message'>" + 
+        data.answer.replace(/\n/g,"<br>") +
+        "</div>";
+
+    })
+
+    .catch(error => {
+
+        console.log(error);
+
+    });
+
+}
+
