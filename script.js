@@ -148,8 +148,7 @@ async function sendMessage() {
 
         chat.innerHTML +=
             "<div class='bot-message'>" +
-            data.answer.replace(/\n/g, "
-") +
+            data.answer.replace(/\n/g, "<br>") +
             "</div>";
 
         chat.scrollTop = chat.scrollHeight;
