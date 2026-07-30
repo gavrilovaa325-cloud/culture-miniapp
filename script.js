@@ -112,14 +112,19 @@ window.addEventListener("mousemove",(e)=>{
 
 // Чат с цифровым помощником ЦКиД
 
-async function sendMessage(){
+async function sendMessage() {
 
-    let input = document.getElementById("userMessage");
-    let chat = document.getElementById("chatMessages");
+    const input = document.getElementById("userMessage");
+    const chat = document.getElementById("chatMessages");
 
-    let message = input.value.trim();
+    if (!input || !chat) {
+        alert("Не найдено окно чата.");
+        return;
+    }
 
-    if(message === ""){
+    const message = input.value.trim();
+
+    if (message === "") {
         return;
     }
 
@@ -127,36 +132,34 @@ async function sendMessage(){
 
     input.value = "";
 
-    fetch("/api/bot", {
+    try {
 
-        method:"POST",
+        const response = await fetch("/api/bot", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message
+            })
+        });
 
-        headers:{
-            "Content-Type":"application/json"
-        },
+        const data = await response.json();
 
-        body: JSON.stringify({
-            message: message
-        })
+        chat.innerHTML +=
+            "<div class='bot-message'>" +
+            data.answer.replace(/\n/g, "
+") +
+            "</div>";
 
-    })
+        chat.scrollTop = chat.scrollHeight;
 
-    .then(response => response.json())
+    } catch (error) {
 
-    .then(data => {
+        console.error(error);
 
-        chat.innerHTML += 
-        "<div class='bot-message'>" + 
-        data.answer.replace(/\n/g,"<br>") +
-        "</div>";
-
-    })
-
-    .catch(error => {
-
-        console.log(error);
-
-    });
+        chat.innerHTML +=
+            "<div class='bot-message'>Ошибка подключения к серверу.</div>";
+    }
 
 }
-
